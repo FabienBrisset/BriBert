@@ -4,26 +4,31 @@
 		<meta charset="ISO-8859-1">
 		<title>WordDef</title>
 		<link href="./bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
+		<link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+		<link href="WordDef.css" rel="stylesheet" />
+		
+		<script type="text/javascript" src="./jquery-2.1.4.min.js"></script>
+		<script type="text/javascript" src="./bootstrap/js/bootstrap.min.js"></script>
 	</head>
 
-	<body bgcolor = "lightblue">
-		<form action="" method = "POST">
-			Mot a rechercher :
-			<?php 
-				if (isset($_POST['dataToSearch'])) {
-					$dataToSearch = $_POST['dataToSearch'];
-					echo "<input type = 'text' name = 'dataToSearch' value = ".$dataToSearch." />";
-				}
-				else if (isset($_GET['mot'])) {
-					$dataToSearch = $_GET['mot'];
-					echo "<input type = 'text' name = 'dataToSearch' value = ".$dataToSearch." />";
-				}
-				else { ?>
-					<input type = "text" name = "dataToSearch" placeholder = "Mot a chercher sur Diko" />
-				<?php
-				}
+	<body bgcolor = "azure">
+		<form class = "form-search" action="" method = "POST">
+			<div id = 'form' class = "input-append">
+				<?php 
+					if (isset($_POST['dataToSearch'])) {
+						$dataToSearch = $_POST['dataToSearch'];
+						echo "<input class='span2 search-query' id = 'inputForm' type = 'text' name = 'dataToSearch' value = ".$dataToSearch." />";
+					}
+					else if (isset($_GET['mot'])) {
+						$dataToSearch = $_GET['mot'];
+						echo "<input class='span2 search-query' id = 'inputForm' type = 'text' name = 'dataToSearch' value = ".$dataToSearch." />";
+					}
+					else { 
+						echo "<input class='span2 search-query' id = 'inputForm' type = 'text' name = 'dataToSearch' placeholder = 'Mot a chercher sur Diko' />";
+					}
 				?>
-			<input type = "submit" name = "valider" value = "Valider" />
+				<button type = "submit" class="btn" id = 'validForm' name = "valider" onclick = "putOnTop()" /><span class = "glyphicon icon-search"></span></button>
+			</div>
 		</form>
 	
 		<?php 
@@ -37,7 +42,6 @@
 			$dataToSearch = strtolower($dataToSearch);
 			
 			$dataToSearchWithFirstUpperCase = ucfirst($dataToSearch);
-			echo "<h1><b>".$dataToSearchWithFirstUpperCase."</b></h1>";
 			
 			// On va regarder si le mot a déjà été recherché (si un fichier du même nom existe déjà)
 			$i = 0;
@@ -60,12 +64,13 @@
 			if ($wordAlreadySearch) {
 				$contenuFichier = file_get_contents("caches/".$fileToSearch);
 				$i = 0;
-				$matches;
 				preg_match("~<def>(.*)</def>~i", $contenuFichier, $matches);
 				if ($matches != null) {
-					echo "<h1><b><font color = 'red'> Definitions :</font></b></h1> ".$matches[1];
+					echo "<div id = 'title'><h1><b>".$dataToSearchWithFirstUpperCase."</b></h1></div>";
+					echo "<h1><b><font color = 'midnightblue'> Definitions</font></b></h1><div id = 'definition'>".$matches[1]."</div>";
 					preg_match("#<sortant>(.*)</sortant>#Us", $contenuFichier, $matches2);
 					if ($matches2 != null) {
+						echo "<div id = 'relationsSortantes'>";
 						echo "<h1><b><font color = 'red'> Relations sortantes :</font></b></h1> ";
 						$rel = explode(">", $matches2[1]);
 						
@@ -84,15 +89,66 @@
 								$dataToDisplay = str_replace("9", "", $dataToDisplay);
 								$dataToDisplay = str_replace(":", "", $dataToDisplay);
 								$dataToDisplay = str_replace("  ", " ", $dataToDisplay);
+								
 								if (in_array($dataToDisplay, $relSortantes) == false) {
-									
 									$containsAppostrophes = strstr($dataToDisplay , "\"");
 									$containsUnderscores = strstr($dataToDisplay , "_");
 									$containsRCrochet = strstr($dataToDisplay , "r [");
+									$containsCrochetOuvrant = strstr($dataToDisplay , "[");
+									$containsCrochetFermant = strstr($dataToDisplay , "]");
 									
 									if ($containsAppostrophes == null && $containsUnderscores == null && $containsRCrochet == null) {
-										echo $dataToDisplay."<br><br>";
-										array_push($relSortantes, $rel[$i]);
+										if (($containsCrochetOuvrant != null && $containsCrochetFermant != null) || ($containsCrochetOuvrant == null && $containsCrochetFermant == null) ) {
+											if ($dataToDisplay != null) {
+												if ($dataToDisplay != " ") {
+													echo $dataToDisplay."<br><br>";
+													array_push($relSortantes, $rel[$i]);
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+						echo "</div>";
+					}
+					preg_match("#<entrant>(.*)</entrant>#Us", $contenuFichier, $matches3);
+					if ($matches3 != null) {
+						echo "<h1><b><font color = 'red'> Relations entrantes :</font></b></h1> ";
+						$rel = explode(">", $matches3[1]);
+						$relEntrantes = [];
+						$i = 0;
+						for ($i; $i < sizeof($rel); $i++) {
+							if ($rel[$i] != " " && $rel[$i] != $dataToSearch) {
+								$dataToDisplay = str_replace("0", "", $rel[$i]);
+								$dataToDisplay = str_replace("1", "", $dataToDisplay);
+								$dataToDisplay = str_replace("2", "", $dataToDisplay);
+								$dataToDisplay = str_replace("3", "", $dataToDisplay);
+								$dataToDisplay = str_replace("4", "", $dataToDisplay);
+								$dataToDisplay = str_replace("5", "", $dataToDisplay);
+								$dataToDisplay = str_replace("6", "", $dataToDisplay);
+								$dataToDisplay = str_replace("7", "", $dataToDisplay);
+								$dataToDisplay = str_replace("8", "", $dataToDisplay);
+								$dataToDisplay = str_replace("9", "", $dataToDisplay);
+								$dataToDisplay = str_replace(":", "", $dataToDisplay);
+								$dataToDisplay = str_replace("  ", " ", $dataToDisplay);
+								
+								if (in_array($dataToDisplay, $relSortantes) == false) {
+									$containsAppostrophes = strstr($dataToDisplay , "\"");
+									$containsUnderscores = strstr($dataToDisplay , "_");
+									$containsRCrochet = strstr($dataToDisplay , "r [");
+									$containsCrochetOuvrant = strstr($dataToDisplay , "[");
+									$containsCrochetFermant = strstr($dataToDisplay , "]");
+									
+									if ($containsAppostrophes == null && $containsUnderscores == null && $containsRCrochet == null) {
+										if (($containsCrochetOuvrant != null && $containsCrochetFermant != null) || ($containsCrochetOuvrant == null && $containsCrochetFermant == null)) {
+											if ($dataToDisplay != null) {
+												if ($dataToDisplay != " ") {
+													echo $dataToDisplay."<br><br>";
+													array_push($relSortantes, $rel[$i]);
+												}
+											}
+										}
 									}
 								}
 							}
@@ -105,25 +161,109 @@
 				$data  = file_get_contents($site);
 				$monfichier = fopen("caches/".$fileToSearch, 'w+');
 				fputs($monfichier, $data);
+				
+				$currentColonne = 0;
+				$ligne = 0;
+				$currentLigne = 0;
 
 				if (strstr($data, 'OVERLOAD') == NULL) {
 					$i = 0;
 					$matches;
 					preg_match("~<def>(.*)</def>~i", $data, $matches);
 					if ($matches != null) {
+						echo "<div id = 'title'><h1><b>".$dataToSearchWithFirstUpperCase."</b></h1></div>";
 						echo "<h1><b><font color = 'red'> Definitions :</font></b></h1> ".$matches[1];
 						preg_match("#<sortant>(.*)</sortant>#Us", $data, $matches2);
 						if ($matches2 != null) {
 							echo "<h1><b><font color = 'red'> Relations sortantes :</font></b></h1> ";
+							echo "<table border = '0' align = 'center'>";
 							$rel = explode(">", $matches2[1]);
 							
 							$relSortantes = [];
+							echo "<tr>";
 							for ($i; $i < sizeof($rel); $i++) {
-								if (preg_match("<^[A-Za-z]*$>", $rel[$i])) {
-									if ($rel[$i] != " " && $rel[$i] != $dataToSearch) {
-										if (in_array($rel[$i], $relSortantes) == false) {
-											echo $rel[$i]."<br>";
-											array_push($relSortantes, $rel[$i]);
+								if ($rel[$i] != " " && $rel[$i] != $dataToSearch) {
+									$dataToDisplay = str_replace("0", "", $rel[$i]);
+									$dataToDisplay = str_replace("1", "", $dataToDisplay);
+									$dataToDisplay = str_replace("2", "", $dataToDisplay);
+									$dataToDisplay = str_replace("3", "", $dataToDisplay);
+									$dataToDisplay = str_replace("4", "", $dataToDisplay);
+									$dataToDisplay = str_replace("5", "", $dataToDisplay);
+									$dataToDisplay = str_replace("6", "", $dataToDisplay);
+									$dataToDisplay = str_replace("7", "", $dataToDisplay);
+									$dataToDisplay = str_replace("8", "", $dataToDisplay);
+									$dataToDisplay = str_replace("9", "", $dataToDisplay);
+									$dataToDisplay = str_replace(":", "", $dataToDisplay);
+									$dataToDisplay = str_replace("  ", " ", $dataToDisplay);
+									if (in_array($dataToDisplay, $relSortantes) == false) {
+										
+										$containsAppostrophes = strstr($dataToDisplay , "\"");
+										$containsUnderscores = strstr($dataToDisplay , "_");
+										$containsRCrochet = strstr($dataToDisplay , "r [");
+										
+										if ($containsAppostrophes == null && $containsUnderscores == null && $containsRCrochet == null) {
+											if ($dataToDisplay != null) {
+												if ($dataToDisplay != " ") {
+													if ($currentLigne != $ligne) {
+														echo "<tr><td>";
+														$ligne++;
+														$currentColonne = 0;
+													}
+													else {
+														echo "<td>";
+													}
+													echo $dataToDisplay."<br><br>";
+													array_push($relSortantes, $rel[$i]);
+													if ($currentColonne == 29) {
+														echo "</td></tr>";
+														$currentColonne++;
+														$currentLigne++;
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+						preg_match("#<entrant>(.*)</entrant>#Us", $data, $matches3);
+						if ($matches3 != null) {
+							echo "<h1><b><font color = 'red'> Relations sortantes :</font></b></h1> ";
+							$rel = explode(">", $matches3[1]);
+							
+							$relEntrantes = [];
+							$i = 0;
+							for ($i; $i < sizeof($rel); $i++) {
+								if ($rel[$i] != " " && $rel[$i] != $dataToSearch) {
+									$dataToDisplay = str_replace("0", "", $rel[$i]);
+									$dataToDisplay = str_replace("1", "", $dataToDisplay);
+									$dataToDisplay = str_replace("2", "", $dataToDisplay);
+									$dataToDisplay = str_replace("3", "", $dataToDisplay);
+									$dataToDisplay = str_replace("4", "", $dataToDisplay);
+									$dataToDisplay = str_replace("5", "", $dataToDisplay);
+									$dataToDisplay = str_replace("6", "", $dataToDisplay);
+									$dataToDisplay = str_replace("7", "", $dataToDisplay);
+									$dataToDisplay = str_replace("8", "", $dataToDisplay);
+									$dataToDisplay = str_replace("9", "", $dataToDisplay);
+									$dataToDisplay = str_replace(":", "", $dataToDisplay);
+									$dataToDisplay = str_replace("  ", " ", $dataToDisplay);
+									
+									if (in_array($dataToDisplay, $relSortantes) == false) {
+										$containsAppostrophes = strstr($dataToDisplay , "\"");
+										$containsUnderscores = strstr($dataToDisplay , "_");
+										$containsRCrochet = strstr($dataToDisplay , "r [");
+										$containsCrochetOuvrant = strstr($dataToDisplay , "[");
+										$containsCrochetFermant = strstr($dataToDisplay , "]");
+										
+										if ($containsAppostrophes == null && $containsUnderscores == null && $containsRCrochet == null) {
+											if (($containsCrochetOuvrant != null && $containsCrochetFermant != null) || ($containsCrochetOuvrant == null && $containsCrochetFermant == null)) {
+												if ($dataToDisplay != null) {
+													if ($dataToDisplay != " ") {
+														echo $dataToDisplay."<br><br>";
+														array_push($relSortantes, $rel[$i]);
+													}
+												}
+											}
 										}
 									}
 								}
@@ -137,9 +277,14 @@
 			}
 		}
 		?>
-
+		<script>
+			if (document.getElementById('definition') != null) {
+					document.getElementById('form').style.marginTop = "0px";
+				}
+			function putOnTop() {
+				document.getElementById('form').style.marginTop = "0px";
+				checkedOnce = true;
+			}
+		</script>
 	</body>
-	
-	<script type="text/javascript" src="./jquery-2.1.4.min.js"></script>
-	<script type="text/javascript" src="./bootstrap/js/bootstrap.min.js"></script>
 </html>

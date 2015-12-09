@@ -1,0 +1,20 @@
+body {
+	text-align: center;
+}
+
+#form { 
+	margin-top: 22%;
+}
+
+#title {
+	margin-bottom: 30px;
+	background-color: silver;
+}
+
+#definition {
+	display: none;
+}
+
+#relationsSortantes {
+	display: none;
+}
