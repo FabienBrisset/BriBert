@@ -1,3 +1,14 @@
+<?php 
+function getTextBetweenTags($string, $tagname) {
+    $pattern = "/<$tagname>([\w\W]*?)<\/$tagname>/";
+    preg_match($pattern, $string, $matches);
+	if ($matches != NULL)
+		return $matches[1];
+	else 
+		return NULL;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 	<head>
@@ -6,6 +17,7 @@
 		<link href="./bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" />
 		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 		<link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+		<link rel="icon" href="WordDef.ico" />
 		
 		<link href="WordDef.css" rel="stylesheet" />
 		
@@ -77,16 +89,18 @@
 				if ($wordAlreadySearch) {
 					$contenuFichier = file_get_contents("caches/".$fileToSearch);
 					$i = 0;
-					preg_match("~<def>(.*)</def>~i", $contenuFichier, $matches);
+					
+					$matches = getTextBetweenTags($contenuFichier, "def");
+					
 					if ($matches != null) {
 						echo "<div id = 'title'><h1><b>".$dataToSearchWithFirstUpperCase."</b></h1></div>";
-						if ($matches[1] != "") {
-							echo "<div id = 'titleDef' onclick = 'displayDefinition()'><h1><b><font color = 'midnightblue'> Definitions</font></b></h1></div><div id = 'definition'>".$matches[1]."</div>";
+						if ($matches != "") {
+							echo "<div id = 'titleDef' onclick = 'displayDefinition()'><h1><b><font color = 'midnightblue'> Definitions</font></b></h1></div><div id = 'definition'>".$matches."<br><br></div>";
 						}
 						preg_match("#<sortant>(.*)</sortant>#Us", $contenuFichier, $matches2);
 						if ($matches2 != null) {
 							echo "<div id = 'titleSortantes' onclick = 'displaySortantes()'><h1><b><font color = 'red'> Relations sortantes</font></b></h1></div>";
-							echo "<div id = 'relationsSortantes'>";
+							echo "<div id = 'relationsSortantes'><br>";
 							$rel = explode(">", $matches2[1]);
 							$arrayTypesRel = array();
 							for ($i; $i < sizeof($rel); $i++) {
@@ -190,7 +204,7 @@
 									$id++;
 									echo "<div id = 'properties' class = 'row' onclick = 'displayProperties(".$id.")'>";
 									echo "<div class = 'col-md-12'>";
-									echo "<b>".$arrayTypesRel[$a]."</b><br>";
+									echo "<div class = 'withPointer'><b>".$arrayTypesRel[$a]."</b></div><br>";
 									echo "</div>";
 									echo "</div>";
 									
@@ -223,12 +237,12 @@
 									echo "</div>";
 								}
 							}
-							echo "</div>";
+							echo "<br><br></div>";
 						}
 						preg_match("#<entrant>(.*)</entrant>#Us", $contenuFichier, $matches3);
 						if ($matches3 != null) {
 							echo "<div id = 'titleEntrantes' onclick = 'displayEntrantes()'><h1><b><font color = 'red'> Relations entrantes</font></b></h1></div>";
-							echo "<div id = 'relationsEntrantes'>";
+							echo "<div id = 'relationsEntrantes'><br>";
 							$rel = explode(">", $matches3[1]);
 							$arrayTypesRel = array();
 						
@@ -326,13 +340,13 @@
 									}
 								}
 							}
-
+							
 							for ($a = 0; $a < sizeof($arrayTypesRel); $a++) {
 								if (sizeof($relEntrantes[$a]) > 1) {
 									$id++;
 									echo "<div id = 'properties' class = 'row' onclick = 'displayProperties(".$id.")'>";
 									echo "<div class = 'col-md-12'>";
-									echo "<b>".$arrayTypesRel[$a]."</b><br>";
+									echo "<div class = 'withPointer'><b>".$arrayTypesRel[$a]."</b></div><br>";
 									echo "</div>";
 									echo "</div>";
 									
@@ -383,17 +397,17 @@
 
 					if (strstr($data, 'OVERLOAD') == NULL) {
 						$i = 0;
-						$matches;
-						preg_match("~<def>(.*)</def>~i", $data, $matches);
+						$matches = getTextBetweenTags($data, "def");
+				
 						if ($matches != null) {
 							echo "<div id = 'title'><h1><b>".$dataToSearchWithFirstUpperCase."</b></h1></div>";
-							if ($matches[1] != "") {
-								echo "<div id = 'titleDef' onclick = 'displayDefinition()'><h1><b><font color = 'midnightblue'> Definitions</font></b></h1></div><div id = 'definition'>".$matches[1]."</div>";
+							if ($matches != "") {
+								echo "<div id = 'titleDef' onclick = 'displayDefinition()'><h1><b><font color = 'midnightblue'> Definitions</font></b></h1></div><div id = 'definition'>".$matches."<br><br></div>";
 							}
 							preg_match("#<sortant>(.*)</sortant>#Us", $data, $matches2);
 							if ($matches2 != null) {
 								echo "<div id = 'titleSortantes' onclick = 'displaySortantes()'><h1><b><font color = 'red'> Relations sortantes</font></b></h1></div>";
-								echo "<div id = 'relationsSortantes'>";
+								echo "<div id = 'relationsSortantes'><br>";
 								$rel = explode(">", $matches2[1]);
 								$arrayTypesRel = array();
 								for ($i; $i < sizeof($rel); $i++) {
@@ -491,48 +505,51 @@
 										}
 									}
 								}
-								
+								$id = 0;
 								for ($a = 0; $a < sizeof($arrayTypesRel); $a++) {
 									if (sizeof($relSortantes[$a]) > 1) {
-										echo "<div class = 'row'>";
+										$id++;
+										echo "<div id = 'properties' class = 'row' onclick = 'displayProperties(".$id.")'>";
 										echo "<div class = 'col-md-12'>";
-										echo "<b>".$arrayTypesRel[$a]."</b><br>";
+										echo "<div class = 'withPointer'><b>".$arrayTypesRel[$a]."</b></div><br>";
 										echo "</div>";
 										echo "</div>";
 										
+										
 										$cpt = 0;
-
-										for ($b = 0; $b < sizeof($relSortantes[$a]); $b++) {	
-											if ($relSortantes[$a][$b] != "")  {
-												if ($cpt == 0) {
-													echo "<div class = 'row'>";
+										echo "<div id = '".$id."' style = 'display:none'>";
+											for ($b = 0; $b < sizeof($relSortantes[$a]); $b++) {	
+												if ($relSortantes[$a][$b] != "")  {
+													if ($cpt == 0) {
+														echo "<div class = 'row'>";
+															echo "<div class = 'col-md-3'>".$relSortantes[$a][$b]."</div>";
+															
+															if ($b == (sizeof($relSortantes[$a]) - 1)) {
+																echo "</div>";
+															}
+														$cpt++;
+													}
+													else if ($cpt < 3 && $b != (sizeof($relSortantes[$a]) - 1)) {
 														echo "<div class = 'col-md-3'>".$relSortantes[$a][$b]."</div>";
-														
-														if ($b == (sizeof($relSortantes[$a]) - 1)) {
-															echo "</div>";
-														}
-													$cpt++;
+														$cpt++;
+													}
+													else {
+														echo "<div class = 'col-md-3'>".$relSortantes[$a][$b]."</div>";
+														echo "</div>";
+														$cpt = 0;
+													}
+													
 												}
-												else if ($cpt < 3 && $b != (sizeof($relSortantes[$a]) - 1)) {
-													echo "<div class = 'col-md-3'>".$relSortantes[$a][$b]."</div>";
-													$cpt++;
-												}
-												else {
-													echo "<div class = 'col-md-3'>".$relSortantes[$a][$b]."</div>";
-													echo "</div>";
-													$cpt = 0;
-												}
-												
 											}
-										}
+										echo "</div>";
 									}
 								}
-								echo "</div>";
+								echo "<br><br></div>";
 							}
 							preg_match("#<entrant>(.*)</entrant>#Us", $data, $matches3);
 							if ($matches3 != null) {
 								echo "<div id = 'titleEntrantes' onclick = 'displayEntrantes()'><h1><b><font color = 'red'> Relations entrantes</font></b></h1></div>";
-								echo "<div id = 'relationsEntrantes'>";
+								echo "<div id = 'relationsEntrantes'><br>";
 								$rel = explode(">", $matches3[1]);
 								$arrayTypesRel = array();
 							
@@ -633,37 +650,39 @@
 								
 								for ($a = 0; $a < sizeof($arrayTypesRel); $a++) {
 									if (sizeof($relEntrantes[$a]) > 1) {
-										echo "<div class = 'row'>";
+										$id++;
+										echo "<div id = 'properties' class = 'row' onclick = 'displayProperties(".$id.")'>";
 										echo "<div class = 'col-md-12'>";
-										echo "<b>".$arrayTypesRel[$a]."</b><br>";
+										echo "<div class = 'withPointer'><b>".$arrayTypesRel[$a]."</b></div><br>";
 										echo "</div>";
 										echo "</div>";
 										
 										$cpt = 0;
+										echo "<div id = '".$id."' style = 'display:none'>";
+											for ($b = 0; $b < sizeof($relEntrantes[$a]); $b++) {
+												if ($relEntrantes[$a][$b] != "")  {
+													if ($cpt == 0) {
+														echo "<div class = 'row'>";
+															echo "<div class = 'col-md-3'>".$relEntrantes[$a][$b]."</div>";
 
-										for ($b = 0; $b < sizeof($relEntrantes[$a]); $b++) {	
-											if ($relEntrantes[$a][$b] != "")  {
-												if ($cpt == 0) {
-													echo "<div class = 'row'>";
+															if ($b == (sizeof($relEntrantes[$a]) - 1)) {
+																echo "</div>";
+															}
+														$cpt++;
+													}
+													else if ($cpt < 3 && $b != (sizeof($relEntrantes[$a]) - 1)) {
 														echo "<div class = 'col-md-3'>".$relEntrantes[$a][$b]."</div>";
-														
-														if ($b == (sizeof($relEntrantes[$a]) - 1)) {
-															echo "</div>";
-														}
-													$cpt++;
+														$cpt++;
+													}
+													else {
+														echo "<div class = 'col-md-3'>".$relEntrantes[$a][$b]."</div>";
+														echo "</div>";
+														$cpt = 0;
+													}
+
 												}
-												else if ($cpt < 3 && $b != (sizeof($relEntrantes[$a]) - 1)) {
-													echo "<div class = 'col-md-3'>".$relEntrantes[$a][$b]."</div>";
-													$cpt++;
-												}
-												else {
-													echo "<div class = 'col-md-3'>".$relEntrantes[$a][$b]."</div>";
-													echo "</div>";
-													$cpt = 0;
-												}
-												
 											}
-										}
+										echo "</div>";
 									}
 								}
 								echo "</div>";
@@ -713,9 +732,11 @@
 					console.log(prop);
 					if (prop.style.display == "inline") {
 						prop.style.display = "none";
+						prop.style.color = "#677E52";
 					}
 					else {
 						prop.style.display = "inline";
+						prop.style.color = "#677E52";
 					}
 				}
 			</script>
