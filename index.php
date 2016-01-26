@@ -142,6 +142,11 @@ function getTextBetweenTags($string, $tagname) {
 								$relSortantes[$i][0] = "";
 							}
 							
+							for ($o = 0; $o < sizeof($relSortantes); $o++) {
+								if ($relSortantes[$o] != NULL)
+									sort($relSortantes[$o]);
+							}			
+							
 							$i = 0;
 			
 							for ($i; $i < sizeof($rel); $i++) {
@@ -198,6 +203,12 @@ function getTextBetweenTags($string, $tagname) {
 									}
 								}
 							}
+							
+							for ($o = 0; $o < sizeof($relSortantes); $o++) {
+								if ($relSortantes[$o] != NULL)
+									sort($relSortantes[$o]);
+							}
+							
 							$id = 0;
 							for ($a = 0; $a < sizeof($arrayTypesRel); $a++) {
 								if (sizeof($relSortantes[$a]) > 1) {
@@ -286,6 +297,11 @@ function getTextBetweenTags($string, $tagname) {
 								$relEntrantes[$i][0] = "";
 							}
 							
+							for ($o = 0; $o < sizeof($relEntrantes); $o++) {
+								if ($relEntrantes[$o] != NULL)
+									sort($relEntrantes[$o]);
+							}
+							
 							$i = 0;
 							for ($i; $i < sizeof($rel); $i++) {
 								$dataToDisplay = str_replace("0", "", $rel[$i]);
@@ -339,6 +355,11 @@ function getTextBetweenTags($string, $tagname) {
 										}
 									}
 								}
+							}
+							
+							for ($o = 0; $o < sizeof($relEntrantes); $o++) {
+								if ($relEntrantes[$o] != NULL)
+									sort($relEntrantes[$o]);
 							}
 							
 							for ($a = 0; $a < sizeof($arrayTypesRel); $a++) {
@@ -449,6 +470,11 @@ function getTextBetweenTags($string, $tagname) {
 									$relSortantes[$i][0] = "";
 								}
 								
+								for ($o = 0; $o < sizeof($relSortantes); $o++) {
+									if ($relSortantes[$o] != NULL)
+										sort($relSortantes[$o]);
+								}			
+								
 								$i = 0;
 				
 								for ($i; $i < sizeof($rel); $i++) {
@@ -505,6 +531,12 @@ function getTextBetweenTags($string, $tagname) {
 										}
 									}
 								}
+								
+								for ($o = 0; $o < sizeof($relSortantes); $o++) {
+									if ($relSortantes[$o] != NULL)
+										sort($relSortantes[$o]);
+								}
+							
 								$id = 0;
 								for ($a = 0; $a < sizeof($arrayTypesRel); $a++) {
 									if (sizeof($relSortantes[$a]) > 1) {
@@ -591,8 +623,13 @@ function getTextBetweenTags($string, $tagname) {
 								
 								for ($i; $i < sizeof($arrayTypesRel); $i++) {
 									$relEntrantes[$i][0] = "";
-								}
+								}								
 								
+								for ($o = 0; $o < sizeof($relEntrantes); $o++) {
+									if ($relEntrantes[$o] != NULL)
+										sort($relEntrantes[$o]);
+								}
+															
 								$i = 0;
 								for ($i; $i < sizeof($rel); $i++) {
 									$dataToDisplay = str_replace("0", "", $rel[$i]);
@@ -648,6 +685,11 @@ function getTextBetweenTags($string, $tagname) {
 									}
 								}
 								
+								for ($o = 0; $o < sizeof($relSortantes); $o++) {
+									if ($relEntrantes[$o] != NULL)
+										sort($relEntrantes[$o]);
+								}
+														
 								for ($a = 0; $a < sizeof($arrayTypesRel); $a++) {
 									if (sizeof($relEntrantes[$a]) > 1) {
 										$id++;
