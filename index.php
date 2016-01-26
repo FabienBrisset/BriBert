@@ -184,40 +184,43 @@
 									}
 								}
 							}
-							
+							$id = 0;
 							for ($a = 0; $a < sizeof($arrayTypesRel); $a++) {
 								if (sizeof($relSortantes[$a]) > 1) {
-									echo "<div class = 'row'>";
+									$id++;
+									echo "<div id = 'properties' class = 'row' onclick = 'displayProperties(".$id.")'>";
 									echo "<div class = 'col-md-12'>";
 									echo "<b>".$arrayTypesRel[$a]."</b><br>";
 									echo "</div>";
 									echo "</div>";
 									
+									
 									$cpt = 0;
-
-									for ($b = 0; $b < sizeof($relSortantes[$a]); $b++) {	
-										if ($relSortantes[$a][$b] != "")  {
-											if ($cpt == 0) {
-												echo "<div class = 'row'>";
+									echo "<div id = '".$id."' style = 'display:none'>";
+										for ($b = 0; $b < sizeof($relSortantes[$a]); $b++) {	
+											if ($relSortantes[$a][$b] != "")  {
+												if ($cpt == 0) {
+													echo "<div class = 'row'>";
+														echo "<div class = 'col-md-3'>".$relSortantes[$a][$b]."</div>";
+														
+														if ($b == (sizeof($relSortantes[$a]) - 1)) {
+															echo "</div>";
+														}
+													$cpt++;
+												}
+												else if ($cpt < 3 && $b != (sizeof($relSortantes[$a]) - 1)) {
 													echo "<div class = 'col-md-3'>".$relSortantes[$a][$b]."</div>";
-													
-													if ($b == (sizeof($relSortantes[$a]) - 1)) {
-														echo "</div>";
-													}
-												$cpt++;
+													$cpt++;
+												}
+												else {
+													echo "<div class = 'col-md-3'>".$relSortantes[$a][$b]."</div>";
+													echo "</div>";
+													$cpt = 0;
+												}
+												
 											}
-											else if ($cpt < 3 && $b != (sizeof($relSortantes[$a]) - 1)) {
-												echo "<div class = 'col-md-3'>".$relSortantes[$a][$b]."</div>";
-												$cpt++;
-											}
-											else {
-												echo "<div class = 'col-md-3'>".$relSortantes[$a][$b]."</div>";
-												echo "</div>";
-												$cpt = 0;
-											}
-											
 										}
-									}
+									echo "</div>";
 								}
 							}
 							echo "</div>";
@@ -323,40 +326,42 @@
 									}
 								}
 							}
-							
+
 							for ($a = 0; $a < sizeof($arrayTypesRel); $a++) {
 								if (sizeof($relEntrantes[$a]) > 1) {
-									echo "<div class = 'row'>";
+									$id++;
+									echo "<div id = 'properties' class = 'row' onclick = 'displayProperties(".$id.")'>";
 									echo "<div class = 'col-md-12'>";
 									echo "<b>".$arrayTypesRel[$a]."</b><br>";
 									echo "</div>";
 									echo "</div>";
 									
 									$cpt = 0;
+									echo "<div id = '".$id."' style = 'display:none'>";
+										for ($b = 0; $b < sizeof($relEntrantes[$a]); $b++) {
+											if ($relEntrantes[$a][$b] != "")  {
+												if ($cpt == 0) {
+													echo "<div class = 'row'>";
+														echo "<div class = 'col-md-3'>".$relEntrantes[$a][$b]."</div>";
 
-									for ($b = 0; $b < sizeof($relEntrantes[$a]); $b++) {	
-										if ($relEntrantes[$a][$b] != "")  {
-											if ($cpt == 0) {
-												echo "<div class = 'row'>";
+														if ($b == (sizeof($relEntrantes[$a]) - 1)) {
+															echo "</div>";
+														}
+													$cpt++;
+												}
+												else if ($cpt < 3 && $b != (sizeof($relEntrantes[$a]) - 1)) {
 													echo "<div class = 'col-md-3'>".$relEntrantes[$a][$b]."</div>";
-													
-													if ($b == (sizeof($relEntrantes[$a]) - 1)) {
-														echo "</div>";
-													}
-												$cpt++;
+													$cpt++;
+												}
+												else {
+													echo "<div class = 'col-md-3'>".$relEntrantes[$a][$b]."</div>";
+													echo "</div>";
+													$cpt = 0;
+												}
+
 											}
-											else if ($cpt < 3 && $b != (sizeof($relEntrantes[$a]) - 1)) {
-												echo "<div class = 'col-md-3'>".$relEntrantes[$a][$b]."</div>";
-												$cpt++;
-											}
-											else {
-												echo "<div class = 'col-md-3'>".$relEntrantes[$a][$b]."</div>";
-												echo "</div>";
-												$cpt = 0;
-											}
-											
 										}
-									}
+									echo "</div>";
 								}
 							}
 							echo "</div>";
@@ -701,6 +706,16 @@
 					}
 					else {
 						entrantes.style.display = "inline";
+					}
+				}
+				function displayProperties(s) {
+					var prop = document.getElementById(s);
+					console.log(prop);
+					if (prop.style.display == "inline") {
+						prop.style.display = "none";
+					}
+					else {
+						prop.style.display = "inline";
 					}
 				}
 			</script>
